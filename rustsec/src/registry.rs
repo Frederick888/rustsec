@@ -12,27 +12,16 @@ impl Index {
     /// Open the local crates.io index, fetching it if it doesn't exist, and
     /// updating it if it does.
     pub fn fetch() -> Result<Self, Error> {
-        let index = crates_index::Index::new_cargo_default();
+        let mut index = crates_index::Index::new_cargo_default()?;
 
-        if index.exists() {
-            index.update()?;
-        } else {
-            index.retrieve()?;
-        }
+        index.update()?;
 
         Ok(Index(index))
     }
 
     /// Open the local crates.io index, erroring if it hasn't been fetched yet
     pub fn open() -> Result<Self, Error> {
-        let index = crates_index::Index::new_cargo_default();
-
-        if !index.exists() {
-            fail!(
-                ErrorKind::Registry,
-                "crates.io registry has not been fetched yet"
-            );
-        }
+        let index = crates_index::Index::new_cargo_default()?;
 
         Ok(Index(index))
     }
